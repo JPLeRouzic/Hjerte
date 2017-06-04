@@ -11,7 +11,8 @@ public class EntryPoint
 {
     public static Control controller;
     public static OuterFrame outer_frame;
-    public static HMM hmm;
+    public static HMM hmmTrain;
+    public static HMM hmmTest;
 
     public EntryPoint()
     {

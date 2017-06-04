@@ -10,6 +10,7 @@ public class OuterFrame extends JFrame
 
     static final long serialVersionUID = 1L;
     public MainPanel mainPanel;
+    public ResultPanel rsltPanel ;
     public Control c;
     public JMenuBar menu;
 
@@ -46,6 +47,9 @@ public class OuterFrame extends JFrame
         mainPanel = new MainPanel(this);
         mainPanel.setBackground(Color.blue);
         add(mainPanel, "West");
+        rsltPanel = new ResultPanel(this);
+        rsltPanel.setBackground(Color.blue);
+        add(rsltPanel, "East");
         pack();
         setVisible(true);
     }

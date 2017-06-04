@@ -6,7 +6,6 @@ import ML.featureDetection.NormalizeBeat;
 import ML.featureDetection.TrainOne;
 import Misc.AudioFeatures.Cancel;
 import Misc.AudioFeatures.FromFileToAudio;
-import Misc.Gui.Controller.FilesTableModel;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -34,7 +33,7 @@ public final class ExtractFeatures {
         NormalizeBeat norm = new NormalizeBeat();
         for (int i = 0; i < recordingInfo.length; i++) {
             File load_file = new File(recordingInfo[i].file_path);
-System.out.println(load_file.getName());
+System.out.println("File: " + load_file.getName());
             PDefFeats predefFeatures = predefinedFeatures(load_file);
             FromFileToAudio e = new FromFileToAudio(load_file);
             float samples[] = e.getAudioSamples().getSamplesMixedDown();
@@ -47,6 +46,7 @@ System.out.println(load_file.getName());
                     norm);
 
             obs.addAll(obs1);
+System.out.println("Beat: " + obs.size());
         }
         EntryPoint.controller.filesList.fillTable(arecordinginfo);
         EntryPoint.controller.filesList.fireTableDataChanged();

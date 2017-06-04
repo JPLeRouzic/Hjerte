@@ -18,16 +18,12 @@ public final class MainPanel extends JPanel
 
     public JTable heart_sound_files_table;
 
-    private JPanel HMM_panel;
-    private JScrollPane HMM_scroll_panel;
-
     JButton extract_features_button;
     JButton classify_button;
     private final JButton add_recordings_button = new JButton("Add Recordings");
     private final JButton delete_recordings_button = new JButton("Delete Recordings");
 
     private final Control controll;
-    private final JButton HMM_button;
 
     public MainPanel(OuterFrame aThis) {
         outer_frame = aThis;
@@ -55,10 +51,6 @@ public final class MainPanel extends JPanel
         button_panel.add(classify_button);
         classify_button.addActionListener(this);
 
-        HMM_button = new JButton("The trained HMM internals");
-        button_panel.add(HMM_button);
-        HMM_button.addActionListener(this);
-
         button_panel.add(new JLabel(""));
         add(button_panel, "South");
 
@@ -74,15 +66,14 @@ public final class MainPanel extends JPanel
         if (event.getSource().equals(extract_features_button)) {
             ArrayList obs = genoa.generateObsFromFiles(controll);
             ExtrFeatrsTrain.trainOnFeatures(obs);
+            // At this point we have a trained HMM at EntryPoint.hmmTrain
         // Classify            
         } else if (event.getSource().equals(classify_button)) {
             classify = new Classify(
                     controll,
                     outer_frame,
                     controll.exfeat.recordingInfo);
-        } else if (event.getSource().equals(HMM_button)) {
-            
-        }
+        } 
     }
 
     public void addTableMouseListener() {

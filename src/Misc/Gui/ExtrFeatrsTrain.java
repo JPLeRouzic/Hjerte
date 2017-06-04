@@ -19,8 +19,8 @@ class ExtrFeatrsTrain
     {
         try
         {
-            EntryPoint.hmm = new HMM(obs);
-            HMM hp = EntryPoint.hmm;
+            EntryPoint.hmmTrain = new HMM(obs);
+            HMM hp = EntryPoint.hmmTrain;
             hp.train();
         }
         catch(Throwable t)
