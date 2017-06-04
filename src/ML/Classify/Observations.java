@@ -3,11 +3,12 @@ package ML.Classify;
 
 import java.util.ArrayList;
 
-// Referenced classes of package ML.Classify:
-//            Observation, HiddenState
-
 public class Observations
 {
+
+    HiddenState state;
+    ArrayList observ; // ArrayList of Observations
+    private int pointer;
 
     public Observations(ArrayList obs)
     {
@@ -24,7 +25,7 @@ public class Observations
     {
         if(observ.size() > 0 && pointer < observ.size())
         {
-            String name = currentObservation().soundName;
+            String name = currentObservation().getFullName();
             return name;
         } else
         {
@@ -68,7 +69,20 @@ public class Observations
         pointer++;
     }
 
-    HiddenState state;
-    ArrayList observ;
-    private int pointer;
+    int size() {
+        return observ.size() ;
+    }
+    
+    public Observation get(int i)
+    {
+        if(observ.size() > 0 && i < observ.size())
+        {
+            Observation obs = (Observation)observ.get(i);
+            return obs;
+        } else
+        {
+            return null;
+        }
+    }
+
 }

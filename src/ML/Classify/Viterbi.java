@@ -22,38 +22,38 @@ public class Viterbi {
      * @param trainedHMM
      * @param observations
      */
-    public void viterbi(HMM trainedHMM, ArrayList observations) {
+    public void viterbi(HMM trainedHMM, Observations observations) {
         //two-dimensional Viterbi Matrix
         boolean sentenceStart = true;
         HashMap prevMap = null;
         for (int i = 0; i < observations.size(); i++) {
-            Observation word = (Observation) observations.get(i);
+            Observation obs = (Observation) observations.get(i);
             HashMap subMap = new HashMap();
 
             if (sentenceStart) {
-                Node n = new Node(word, "S1", (float) 1.0, null);
-                subMap.put(word, n);
+                Node n = new Node(obs, "S1", (float) 1.0, null);
+                subMap.put(obs, n);
                 sentenceStart = false;
             } else {
                 //add all possible states (given the current observation) to the Viterbi matrix                
-                if (trainedHMM.stateForObservationCounts.containsKey(word)) {
+                if (trainedHMM.stateForObservationCounts.containsKey(obs)) {
                     // Only Training Set tags
-                    HashMap tagcounts = (HashMap) trainedHMM.stateForObservationCounts.get(word);
+                    HashMap tagcounts = (HashMap) trainedHMM.stateForObservationCounts.get(obs);
                     for (Iterator it = tagcounts.keySet().iterator(); it.hasNext();) {
                         String tag = (String) it.next();
-                        subMap.put(tag, calcNode(trainedHMM, word, tag, prevMap));
+                        subMap.put(tag, calcNode(trainedHMM, obs, tag, prevMap));
                     }
 
                 } else {
                     //never-before seen observations we can't guess for morphologically Every-Tag Guessing
-                    // trainedHMM.stateForObservationCounts does not contain this word
+                    // trainedHMM.stateForObservationCounts does not contain this obs
                     for (Iterator it = trainedHMM.stateForObservationCounts.keySet().iterator(); it.hasNext();) {
                         String tag = (String) it.next();
-                        subMap.put(tag, calcNode(trainedHMM, word, tag, prevMap));
+                        subMap.put(tag, calcNode(trainedHMM, obs, tag, prevMap));
                     }/*
                     // Every-Tag Guessing
                     for (String tag : tagCounts.keySet()) {
-                    subMap.put(tag, calcNode(word, tag, prevMap));
+                    subMap.put(tag, calcNode(obs, tag, prevMap));
                     }
                      */
                 }

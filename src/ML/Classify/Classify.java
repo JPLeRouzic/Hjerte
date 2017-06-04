@@ -17,8 +17,6 @@ public class Classify
 
     public Classify(Control controller, OuterFrame outer_frame, RecordingInfo info[])
     {
-        int heart_rate = 60 ;
-        
         try {
             ArrayList beats = null;
             RecordingInfo recordings[] = info;
@@ -37,6 +35,8 @@ public class Classify
             float samples[] = e.getAudioSamples().getSamplesMixedDown();
             int smplingRate = (int) e.getAudioSamples().getSamplingRate();
 
+            int heart_rate = 60 ; 
+            
             /**
              * Normalize dynamics of signal
              *
@@ -48,9 +48,7 @@ public class Classify
             FindBeats cb = new FindBeats();
 
             // calculate beat rate
-        
-            // calculate beat rate
-            cb.calcBeat2(data_norm, smplingRate, heart_rate);
+            cb.calcBeat1(data_norm, smplingRate, heart_rate);
             
             // calculate beat rate
             beats = cb.getProbableBeats();
@@ -60,9 +58,13 @@ public class Classify
             // This time we do not attempt at assigning hidden events to them
             // That will be the role of the viterbi function
             // What we need is just a list of Observation events without name
-            EntryPoint.hmm = new HMM(beats);
-            HMM hp = EntryPoint.hmm; // just a short pointer
-            hp.train();
+            Observations obs = new Observations(beats); // beats c'est juste des instants, pas des Observation'
+
+            EntryPoint.hmmTest = new HMM(beats);
+            
+            Viterbi vt = new Viterbi() ;
+            
+            vt.viterbi(EntryPoint.hmmTest, obs) ;
             
             // Assign hidden states to that list of Observations
             // The hidden states are assigned, based on knowledge stored in the trained HMM

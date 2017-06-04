@@ -15,10 +15,11 @@ public class Observation {
     float shiftrel ;         // Shift of this heart sound with respect to S1 as a fraction of the average beat
     float shiftAbs ;         // Shift of this heart sound with respect to S1 
     PDefFeats feats ;
-    String soundName ;      //name of the heart sound (S1, S2, etc..)
+    String namePrefix ;      //name of the heart sound (S1, S2, etc..)
+    String nameSuffix ;      //suffix of the heart sound (4 in S1.4, 8 in S2.8, etc..)
     
-    public Observation(String heartSound, float soundShiftrel, float soundShiftabs, ArrayList soundFFT) {
-        soundName = heartSound;
+    public Observation(String heartPref, float soundShiftrel, float soundShiftabs, ArrayList soundFFT) {
+        namePrefix = heartPref;
         shiftrel = soundShiftrel ;
         shiftAbs = soundShiftabs ;
         signature = soundFFT ;
@@ -28,15 +29,23 @@ public class Observation {
         return signature ;
     }
     
-    public String getName() {
-        return soundName ;
+    public String getNamePref() {
+        return namePrefix ;
     }
     
-    public void setName(String s) {
-        soundName = s;
+    public String getFullName() {
+        return namePrefix + "." + nameSuffix ;
+    }
+    
+    public void setNamePref(String s) {
+        namePrefix = s;
     }
 
     public void addPreDef(PDefFeats predefFeatures) {
         feats = predefFeatures ;
+    }
+
+    public void setNameSufx(String suffix) {
+       nameSuffix = suffix;
     }
 }
