@@ -36,16 +36,14 @@ public class NormalizeBeat {
 
     /**
      * Make amplitude "average" to enable comparison between sound files from
-     * different origins. 
-     * Also shorten the record to the real end, not the one
-     * in the GUI button. 
-     * Also correct bias, average = 0
+     * different origins. Also shorten the record to the real end, not the one
+     * in the GUI button. Also correct bias, average = 0
      */
     public float[] normalizeAmplitude(float[] dataIn) {
 
         // sum all data slots and find max value
         float maxValue = 0, averPlus = 0, averMinus = 0, shift = 0;
-        float absData ;
+        float absData;
         boolean endFlag = true;
         int endIdx = 0;
 
@@ -66,26 +64,44 @@ public class NormalizeBeat {
                 endIdx = idx;
                 endFlag = false;
             }
-            
-            if(dataIn[idx] > 0) {
-                averPlus += dataIn[idx] ;
-            }
-            else {
-                averMinus += dataIn[idx] ;                
+
+            if (dataIn[idx] > 0) {
+                averPlus += dataIn[idx];
+            } else {
+                averMinus += dataIn[idx];
             }
 
+            idx--;
+        }
+
+        float[] dataOut = new float[endIdx + 1];
+
+        /*
+	* Normalize amplitude
+         */
+        shift = (averPlus + averMinus) / dataIn.length;
+
+        // adjust each slot in the "dataIn" array
+        idx = 0;
+        while (idx < endIdx) {
+            dataOut[idx] = dataIn[idx] - shift;
+            idx++;
+        }
+
+        // It is not a good idea to let maxValue to go higher than 0.3
+        // as it is certainly some spike that propelled it so high
+        // and spikes are quite rare
+        idx = 0;
+        while (idx < endIdx) {
             // Get absolute value
-            absData = dataIn[idx] ;
-            if(absData < 0) {
-                absData = - absData ;
+            absData = dataIn[idx];
+            if (absData < 0) {
+                absData = -absData;
             }
-            // It is not a good idea to let maxValue to go higher than 0.3
-            // as it is certainly some spike that propelled it so high
-            // and spikes are quite rare
             if ((absData > maxValue) && (maxValue < 0.3)) {
-                if ((absData > (maxValue * 1.01)) && (maxValue > 0)) {
+                if ((absData > (maxValue * 1.05)) && (maxValue > 0)) {
                     // we do not want to react to a random spike, but increase maxValue just in case
-                    maxValue = (float) (maxValue * 1.01);
+                    maxValue = (float) (maxValue * 1.05);
                 } else {
                     maxValue = absData;
                 }
@@ -95,30 +111,17 @@ public class NormalizeBeat {
                     int y = 7;
                 }
             }
-            idx--;
-        }
-
-        float[] dataOut = new float[endIdx + 1];
-
-        /*
-	* Normalize amplitude
-         */
-        shift = (averPlus + averMinus) / dataIn.length ;
-        float multipl = (float) 1 / maxValue;
-
-        // adjust each slot in the "dataIn" array
-        idx = 0;
-        while (idx < endIdx) {
-            dataOut[idx] = dataIn[idx] - shift;
             idx++;
         }
+        
+        float multipl = (float) 1 / maxValue;
 
         idx = 0;
         while (idx < endIdx) {
             dataOut[idx] = dataOut[idx] * multipl;
             idx++;
         }
-        
+
         /*
 	* Normalize sampling rate
          */

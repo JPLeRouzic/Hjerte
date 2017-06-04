@@ -116,14 +116,11 @@ public class TrainOne {
         if(predefFeatures.nbBeats.intValue() != 0)  {
             heart_rate = (predefFeatures.nbBeats.intValue() * 60) / predefFeatures.duration.intValue();
         }
+        
         cb.calcBeat1(data_norm, smplingRate, heart_rate);
 //        cb.calcBeat(data_norm, heart_rate, smplingRate, 10);
         
-        /**
-         * Normalize bit rate (stretch/pitch) of signal or multiple tiny DFT???
-         *
-         */
-//         float[] data_norm = norm.normalizeAmplitude(samples, smplingRate);
+
         /**
          *
          * Now that we have a clean sound, we will segment it to recognize the
@@ -139,12 +136,12 @@ public class TrainOne {
          */
         Segmentation segmt = new Segmentation(cb);
 
-        ArrayList obs = segmt.segmentation(cb, smplingRate);
+        segmt.segmentation(cb, smplingRate);
         
         // Add suffix to Observations names
-        enrichObs(obs, predefFeatures) ;
+        enrichObs(segmt.segmentedBeats, predefFeatures) ;
         
-        return obs;
+        return segmt.segmentedBeats;
     }
 
     /*
@@ -177,7 +174,7 @@ public class TrainOne {
     private void enrichObs(ArrayList segmentedBeats, PDefFeats predefFeatures) {
                 // For the HMM to separate the observations in more cases than S1-S4, we need to
         // add a "minor" numbering to the "Sx" string.
-        // However it will be added later, to have a reasonnable amount of Observations
+        // However it is added later than primary name, to have a reasonable amount of Observations
         // (not having hundreds that are destination, only once)
         // This because otherwise having only four kind of "Observation" is not very helpful
         for (int u = 0; u < segmentedBeats.size(); u++) {
@@ -187,8 +184,7 @@ public class TrainOne {
 //            float fact = (float) (size / 20.0) ;
             int deux = (int) (size % 20);
             String suffix = String.valueOf(deux) ;
-            String eventName = obs.getName() + "." + suffix ;
-            obs.setName(eventName);
+            obs.setNameSufx(suffix);
             
             // add predefined features
             obs.addPreDef(predefFeatures) ;
