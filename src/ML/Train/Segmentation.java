@@ -15,10 +15,10 @@ import java.util.Iterator;
  * @author jplr
  */
 public class Segmentation {
-    
+
     public ArrayList segmentedBeats = new ArrayList();
     private final FindBeats cb;
-    
+
     public Segmentation(FindBeats cibi) {
         cb = cibi;
     }
@@ -28,109 +28,93 @@ public class Segmentation {
      * which contains the probable S1, S2, S3, S4 We will use ProbableBeats to
      * find the probable locations of other Sx events in moreBeats So we use
      * moreBeats to detect events at proximity of the found time for S1 events.
-     * Once a S1 S1 is detected, the next S1 before the after this S1 and before
-     * the next is supposed to be S2, and so on for S3 and S4.
+     * Once a S1 S1 is detected, the nextPB S1 before the after this S1 and
+     * before the nextPB is supposed to be S2, and so on for S3 and S4.
+     *
      * @param norm
      * @param rate
-     * @return 
+     * @return
      */
-    public ArrayList segmentation(FindBeats norm, int rate) {
-        int S1 = 0;
+    public void segmentation(FindBeats norm, int rate) {
+        /*        int S1 = 0;
         int S2 = 0;
         int S3 = 0;
-        int S4 = 0;
-        Iterator moreBeatsPTR = null;
-        Iterator itrPB = norm.getProbableBeats().iterator();
+        int S4 = 0; 
+        Integer S1MB, S1PB; */
+
+        Iterator itrMB = norm.getMoreBeats().iterator();
         label0:
         do {
-            if (!itrPB.hasNext()) {
+            if (!itrMB.hasNext()) {
                 break;
             }
-            Integer S1base = ((Integer) itrPB.next());
-            Integer S1next;
-            if (itrPB.hasNext()) {
-                S1next = ((Integer) itrPB.next());
-            } else {
-                return segmentedBeats;
-            }
-            float low = (float) (S1base.floatValue() * 0.9);
-            float high = (float) (S1base.floatValue() * 1.1);
-            if (moreBeatsPTR == null) {
-                moreBeatsPTR = norm.getMoreBeats().iterator();
-            }
-            label1:
-            do {
-                do {
-                    if (!moreBeatsPTR.hasNext()) {
-                        continue label0;
-                    }
-                    S1 = ((Integer) moreBeatsPTR.next()).intValue();
-                    if ((float) S1 <= low || (float) S1 >= high) {
-                        continue label1;
-                    }
-                } while ((S1 - S1base.intValue()) + 1 < 0);
-                Observation eventHMM = makeHMMObs("S1", S1, S1base.intValue(), S1next.intValue(), norm, rate);
-                if (eventHMM == null) {
-                    moreBeatsPTR.remove();
-                    continue label0;
-                }
-                addEvents(eventHMM);
-                if (moreBeatsPTR.hasNext()) {
-                    S2 = ((Integer) moreBeatsPTR.next()).intValue();
-                    if (S2 < S1next.intValue()) {
-                        eventHMM = makeHMMObs("S2", S2, S1base.intValue(), S1next.intValue(), norm, rate);
-                        if (eventHMM == null) {
-                            moreBeatsPTR.remove();
-                            continue label0;
-                        }
-                        addEvents(eventHMM);
-                    } else {
-                        moreBeatsPTR.remove();
-                        continue label0;
-                    }
-                }
-                if (moreBeatsPTR.hasNext()) {
-                    S3 = ((Integer) moreBeatsPTR.next()).intValue();
-                    if (S3 < S1next.intValue()) {
-                        eventHMM = makeHMMObs("S3", S3, S1base.intValue(), S1next.intValue(), norm, rate);
-                        if (eventHMM == null) {
-                            moreBeatsPTR.remove();
-                            continue label0;
-                        }
-                        addEvents(eventHMM);
-                    } else {
-                        moreBeatsPTR.remove();
-                        continue label0;
-                    }
-                }
-                if (!moreBeatsPTR.hasNext()) {
-                    continue;
-                }
-                S4 = ((Integer) moreBeatsPTR.next()).intValue();
-                if (S4 < S1next.intValue()) {
-                    eventHMM = makeHMMObs("S4", S4, S1base.intValue(), S1next.intValue(), norm, rate);
-                    if (eventHMM == null) {
-                        moreBeatsPTR.remove();
-                    } else {
-                        addEvents(eventHMM);
-                        continue;
-                    }
-                } else {
-                    moreBeatsPTR.remove();
-                }
-                continue label0;
-            } while (S1 <= S1base.intValue());
-            moreBeatsPTR.remove();
-        } while (true);
 
-        return segmentedBeats;
+            // This possible S1 event is situated between two S1 events in the 
+            // ProbableBeats List,
+            // We try to find which S1 it is the closest.
+            segmentTheBeat(itrMB, norm);
+
+        } while (true);
+        return;
     }
-    
+
+    private void segmentTheBeat(Iterator S1mb, FindBeats norm) {
+        ArrayList mb = norm.getMoreBeats();
+        ArrayList pb = norm.getProbableBeats();
+        Integer prevPB = null, nextPB = null;
+        int cnt = 2;
+        Integer S1MB = null;
+        Observation eventHMM = null;
+
+        Iterator iterPB = pb.iterator();
+        // Get the first element of ProbableBeats, that arrives sooner than S1MB
+        if (iterPB.hasNext()) {
+            prevPB = (Integer) iterPB.next();
+        }
+        boolean flag = true;
+        while (iterPB.hasNext()) {
+            if (flag == true) {
+                nextPB = (Integer) iterPB.next();
+            } else {
+                // flag was found to be false, now make it true
+                flag = true ;
+            }
+            // Analyse one beat to discern how many events there are inside
+            // one event at a time
+            while (S1mb.hasNext()) {
+                S1MB = (Integer) S1mb.next();
+                if(S1MB.intValue() > nextPB.intValue()) {
+                    prevPB = nextPB ;
+                    flag = true ;
+                    // Nothing found in this PB event, go to the next
+                    break;                    
+                }
+                // S1MB = 1650, prevPB = 2534, nextPB = 3626
+                eventHMM = analalyse(prevPB, nextPB, S1MB, norm, cnt);
+                if (eventHMM != null) {
+                    addEvents(eventHMM);
+
+                    // Event suffix progresses
+                    cnt++;
+                } else {
+                    flag = false ;
+                    // Nothing found in this PB event, go to the next
+                    break;
+                }
+            }
+        }
+        return;
+    }
+
     public void addEvents(Observation eventHMM) {
         segmentedBeats.add(eventHMM);
     }
-    
-    private Observation makeHMMObs(String pref, int Sx, int S1base, int S1next, FindBeats norm, int rate) {
+
+    ArrayList getSegmentedBeats() {
+        return segmentedBeats;
+    }
+
+    private Observation makeHMMObs(String pref, int Sx, int S1base, int S1next, FindBeats norm) {
         // make a string for the relative position of the event in the beat
         // Obtain a FFT of the time between S1base and Sx and make a string of it
         // First get the sample between S1base and Sx
@@ -143,7 +127,7 @@ public class Segmentation {
 
         // arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
         System.arraycopy(data, S1base, sample, 0, Sx - S1base);
-        
+
         float offsetAbs = (Sx - S1base);
         float offsetRel = (float) (Sx - S1base) / (float) (S1next - S1base);
 
@@ -154,12 +138,28 @@ public class Segmentation {
         // add a "minor" numbering to the "Sx" string.
         // However it will be added later, to have a reasonnable amount of Observations
         Observation obs = new Observation(pref, offsetRel, offsetAbs, efft);
-        
+
         return obs;
     }
-    
-    ArrayList getSegmentedBeats() {
-        return segmentedBeats;
+
+    private Observation analalyse(
+            Integer prev,
+            Integer next,
+            Integer S1MB,
+            FindBeats norm,
+            int cnt
+    ) {
+        String eventName;
+
+        if ((S1MB.intValue() > prev.intValue()) && (S1MB.intValue() < next.intValue())) {
+            eventName = "S" + String.valueOf(cnt);
+            Observation eventHMM = makeHMMObs(eventName, S1MB.intValue(), prev.intValue(), next.intValue(), norm);
+            if (eventHMM == null) {
+                return null; // continue
+            } else {
+                return eventHMM; // 
+            }
+        } 
+        return null; // not continue
     }
-    
 }
