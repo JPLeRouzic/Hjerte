@@ -138,7 +138,7 @@ public class FindBeats {
                     normalizedData = dataIn;
                     probableS1Beats = events;
                     float tresholdS1 = (ave + (treshFind * max)) / (treshFind + 1);
-                    moreBeatEvents = findNextBeatEvents(dataIn, earlyS1, lateS1, s2Shift, tresholdS1);
+                    moreBeatEvents = findNextBeatEvents(dataIn, tresholdS1);
                     return;
                 }
                 // Normally we should converge, if not then return last heart rate
@@ -149,9 +149,14 @@ public class FindBeats {
                     normalizedData = dataIn;
                     probableS1Beats = events;
                     float tresholdS1 = (ave + (treshFind * max)) / (treshFind + 1);
-                    moreBeatEvents = findNextBeatEvents(dataIn, earlyS1, lateS1, s2Shift, tresholdS1);
+                    moreBeatEvents = findNextBeatEvents(dataIn, tresholdS1);
                     return;
                 } else {
+                    // Maybe the real heart wrong is wrong
+                    if ((events.size() == preBeats.size()) && (events.size() == prepreBeats.size())) {
+                        candidateBeats = events;
+                        break;
+                    }
                     prepreBeats = preBeats;
                     preBeats = events;
                 }
@@ -159,7 +164,7 @@ public class FindBeats {
                     candidateBeats = events;
                 } else if ((nbEvents > (ceiling_low)) && (candidateBeats.size() > events.size())) {
                     candidateBeats = events;
-                }
+                } // troisième cas ?
             } else if (events.size() > (nbSecInFile * 4)) {
                 // Something wrong with dataIn, way too much events, so we filter it heavily
                 Resample resp = new Resample();
@@ -375,20 +380,13 @@ public class FindBeats {
 
     private ArrayList findNextBeatEvents(
             float[] dataIn,
-            float earlyS1, float lateS1,
-            float s2Shift, float treshFnd) {
+            float treshFnd) {
 
         float trshFnd = treshFnd;
         /*        
         // Find next sounds in this beat, we try to find four times the probableS1Beats
         // for having candidates for S1, S2, S3, S4 events
-        while (trshFnd > 0.05) {
-            moreBeatEvents = calcBeatFind(dataIn, earlyS1, lateS1, s2Shift, trshFnd);
-            if (moreBeatEvents.size() > (probableS1Beats.size() * 4)) {
-                return moreBeatEvents;
-            }
-            trshFnd = (float) (trshFnd * 0.8);
-            System.out.println("trshFnd= " + trshFnd) ;
+//            System.out.println("trshFnd= " + trshFnd) ;
         }
          */
 
@@ -419,23 +417,23 @@ public class FindBeats {
         float ave;
         int winWidth = (data.length / (nbBeats * 32));
         int idx = 0;
-        
+
         // find this file average
         while (binary.size() < nbBeats) {
             binary.clear();
-            idx = 0 ;                
+            idx = 0;
             while (idx < data.length) {
                 ave = lastWinAve(data, idx, winWidth);
                 if (ave > treshold) {
                     binary.add(idx);
-                    System.out.println("betBeatSlice: " + binary.size()) ;
+//                    System.out.println("betBeatSlice: " + binary.size()) ;
                 }
                 idx += 30;
             }
             treshold = (float) (treshold * 0.8);
-            if(treshold < 0.05) {
-                break ;
-            } 
+            if (treshold < 0.05) {
+                break;
+            }
         }
         return binary;
     }

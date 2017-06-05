@@ -19,18 +19,6 @@ import java.util.ArrayList;
  */
 public class NormalizeBeat {
 
-    // the various beats frequencies
-    static float[] auto_correlation;
-
-    // the label for each beat in "auto_correlation"
-    static float[] labels;
-
-    // bag of beats probably including S1, S2, S3, S4 sounds
-    private ArrayList moreBeatEvents = new ArrayList();
-
-    // S1 beats as found in data flow, maybe wrong because of spikes
-    private ArrayList probableS1Beats = new ArrayList();
-
     public NormalizeBeat() {
     }
 
@@ -42,7 +30,7 @@ public class NormalizeBeat {
     public float[] normalizeAmplitude(float[] dataIn) {
 
         // sum all data slots and find max value
-        float maxValue = 0, averPlus = 0, averMinus = 0, shift = 0;
+        float maxValue = 0, moxValue = 0, averPlus = 0, averMinus = 0, shift = 0;
         float absData;
         boolean endFlag = true;
         int endIdx = 0;
@@ -110,6 +98,9 @@ public class NormalizeBeat {
                 if (maxValue > 0.8) {
                     int y = 7;
                 }
+            } 
+            if (absData > moxValue) {
+                    moxValue = absData;
             }
             idx++;
         }
