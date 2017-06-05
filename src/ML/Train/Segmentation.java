@@ -62,7 +62,7 @@ public class Segmentation {
         ArrayList mb = norm.getMoreBeats();
         ArrayList pb = norm.getProbableBeats();
         Integer prevPB = null, nextPB = null;
-        int cnt = 2;
+        int cnt = 1;
         Integer S1MB = null;
         Observation eventHMM = null;
 
@@ -86,6 +86,7 @@ public class Segmentation {
                 if(S1MB.intValue() > nextPB.intValue()) {
                     prevPB = nextPB ;
                     flag = true ;
+                    cnt = 1 ;
                     // Nothing found in this PB event, go to the next
                     break;                    
                 }
