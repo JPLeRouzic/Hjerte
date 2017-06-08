@@ -5,15 +5,15 @@ package Misc.Gui.HMM;
     	private String author;
     	private String hmmName;
     	private String portFolio;
-    	private int trackUsage;
+    	private String hmmUsage;
     	
     	//constructor
-    	public HMMrecord(String authorName, String HMMname, String portFolio, int trackLeng){
+    	public HMMrecord(String authorName, String HMMname, String portFolio, String intendedUsage){
     	
     		setAuthor(authorName);
     		setHMM(HMMname);
     		setPortFolio(portFolio);
-    		setHMMUsage(trackLeng);
+    		setHMMUsage(intendedUsage);
     	}
     	
     	//set author name
@@ -45,21 +45,20 @@ package Misc.Gui.HMM;
     		return portFolio;
     	}
     	
-    	// set track length
-    	public void setHMMUsage(int trackLeng){
-    		trackUsage = trackLeng;
+    	// set hmm length
+    	public void setHMMUsage(String intendedUsage){
+    		hmmUsage = intendedUsage;
     	}
     	
-    	// get track length
-    	public int getHMMUsage(){
-    		return trackUsage;  
+    	// get hmm length
+    	public String getHMMUsage(){
+    		return hmmUsage;  
     	}
     	
     	// to string method
         @Override
     	public String toString(){
-    		return String.format("%s, %s, %s, %d : %d", getAuthor(), 
-    			getHMM(), getPortFolio(), getHMMUsage() / 60,  
-    			getHMMUsage() - (getHMMUsage() / 60) * 60);
+    		return String.format("%s, %s, %s, %s", getAuthor(), 
+    			getHMM(), getPortFolio(), getHMMUsage());
     	}
     }
