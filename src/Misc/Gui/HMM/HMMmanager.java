@@ -12,8 +12,8 @@ public class HMMmanager extends JFrame {
     // four buttons, four fields, four panels, and text area
 
     private JButton addHMMButton, displayHMMsButton, findHMMButton, deleteHMMButton;
-    private JLabel authorLabel, songLabel, portFolioLabel, trackUsageLabel;
-    private JTextField authorField, songField, portFolioField, trackUsageField;
+    private JLabel authorLabel, hmmNameLabel, portFolioLabel, trackUsageLabel;
+    private JTextField authorField, hmmNameField, portFolioField, trackUsageField;
     private JPanel fieldPanelAuthor, fieldPanelHMM, fieldPanelPortFolio, fieldPanelHMMUsage;
     private JTextArea textArea;
 
@@ -31,14 +31,14 @@ public class HMMmanager extends JFrame {
         fieldPanelAuthor.add(authorLabel);
         fieldPanelAuthor.add(authorField);
 
-        //song name label and field
-        songLabel = new JLabel("HMM Title ");
-        songField = new JTextField();
-        songField.setPreferredSize(new Dimension(180, 15));
+        //hmmName name label and field
+        hmmNameLabel = new JLabel("HMM Title ");
+        hmmNameField = new JTextField();
+        hmmNameField.setPreferredSize(new Dimension(180, 15));
         fieldPanelHMM = new JPanel();
         fieldPanelHMM.setLayout(new GridLayout(1, 2, 5, 5));
-        fieldPanelHMM.add(songLabel);
-        fieldPanelHMM.add(songField);
+        fieldPanelHMM.add(hmmNameLabel);
+        fieldPanelHMM.add(hmmNameField);
 
         // portFolio name label and field
         portFolioLabel = new JLabel("PortFolio Name ");
@@ -119,7 +119,7 @@ public class HMMmanager extends JFrame {
             int length = 0;
             String author = authorField.getText();
             String portFolio = portFolioField.getText();
-            String song = songField.getText();
+            String hmmName = hmmNameField.getText();
 
             //add HMM button
             if (event.getActionCommand().contentEquals(" Add HMM ")) {
@@ -140,23 +140,23 @@ public class HMMmanager extends JFrame {
 
                 //author field is empty
                 if (author.trim().length() == 0) {
-                    textArea.setText("Please fill out complete infotmation. \nAuthor Field must be not empty.");
+                    textArea.setText("Please fill out complete information. \nAuthor Field must be not empty.");
                     return;
                 }
 
                 //portFolio field is empty
                 if (portFolio.trim().length() == 0) {
-                    textArea.setText("Please fill out complete infotmation. \nAblum Field must be not empty.");
+                    textArea.setText("Please fill out complete information. \nPortFolio Field must be not empty.");
                     return;
                 }
 
-                //song field is empty
-                if (song.trim().length() == 0) {
-                    textArea.setText("Please fill out complete infotmation. \nHMM Field must be not empty.");
+                //hmmName field is empty
+                if (hmmName.trim().length() == 0) {
+                    textArea.setText("Please fill out complete information. \nHMM Field must be not empty.");
                     return;
                 }
 
-                HMMrecord list = new HMMrecord(author, song, portFolio, length);
+                HMMrecord list = new HMMrecord(author, hmmName, portFolio, length);
                 textArea.setText(list.toString());
             }
         }

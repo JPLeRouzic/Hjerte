@@ -3,7 +3,7 @@ package Misc.Gui.HMM;
     public final class HMMrecord{
     	// instance varables
     	private String author;
-    	private String song;
+    	private String hmmName;
     	private String portFolio;
     	private int trackUsage;
     	
@@ -26,13 +26,13 @@ package Misc.Gui.HMM;
     		return author;
     	}
     	
-    	//set song name
+    	//set hmmName name
     	public void setHMM(String HMMname){
-    		song = HMMname;
+    		hmmName = HMMname;
     	}
-    	//get song name
+    	//get hmmName name
     	public String getHMM(){
-    		return song;
+    		return hmmName;
     	}
     	
     	//set portFolio name
@@ -40,7 +40,7 @@ package Misc.Gui.HMM;
     		portFolio = prtFolio;
     	}
     	
-    	//get ablum name
+    	//get  name
     	public String getPortFolio(){
     		return portFolio;
     	}
