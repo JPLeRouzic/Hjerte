@@ -31,6 +31,7 @@ public class HMM
     int numTrainingBigrams;
     
     HMMutilities hmmUtil;
+    private float similarity;
 
     public HMM(ArrayList obb)
     {
@@ -132,5 +133,13 @@ public class HMM
         } while(true);
         n.probability = maxProb * calcLikelihood(state, word);
         return n;
+    }
+
+    public void setSimilarity(float simil) {
+        similarity = simil ;
+    }
+
+    public String getSimilarity() {
+        return String.valueOf(similarity) ;
     }
 }
