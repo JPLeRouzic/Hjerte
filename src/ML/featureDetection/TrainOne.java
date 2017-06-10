@@ -117,9 +117,7 @@ public class TrainOne {
             heart_rate = (predefFeatures.nbBeats.intValue() * 60) / predefFeatures.duration.intValue();
         }
         
-        cb.calcBeat1(data_norm, smplingRate, heart_rate);
-//        cb.calcBeat(data_norm, heart_rate, smplingRate, 10);
-        
+        cb.calcBeat1(data_norm, smplingRate, heart_rate);        
 
         /**
          *
