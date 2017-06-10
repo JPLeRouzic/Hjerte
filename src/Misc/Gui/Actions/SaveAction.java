@@ -8,9 +8,6 @@ import java.awt.event.ActionEvent;
 import java.io.*;
 import javax.swing.*;
 
-// Referenced classes of package Misc.Gui.Actions:
-//            SamplingRateAction
-
 public class SaveAction extends AbstractAction
 {
 

@@ -3,7 +3,7 @@ package Misc.Gui.Actions;
 import Audio.FileFilterAudio;
 import Misc.AudioFeatures.RecordingInfo;
 import Misc.Gui.Controller.Control;
-import Misc.Gui.ExtractFeatures;
+import Misc.Gui.Main.ExtractFeatures;
 import Misc.Tools.GeneralMethods;
 import Misc.sampled.AudioSamples;
 import java.awt.event.ActionEvent;
@@ -26,6 +26,31 @@ public class AddRecordingAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
+
+        if (load_recording_chooser == null) {
+            load_recording_chooser = new JFileChooser();
+            load_recording_chooser.setCurrentDirectory(new File("."));
+            load_recording_chooser.setFileFilter(new FileFilterAudio());
+            load_recording_chooser.setFileSelectionMode(0);
+            load_recording_chooser.setMultiSelectionEnabled(true);
+        }
+        int dialog_result = load_recording_chooser.showOpenDialog(null);
+        if (dialog_result == 0) {
+            File load_files[] = load_recording_chooser.getSelectedFiles();
+            RecordingInfo[] ri = new RecordingInfo[load_files.length];
+            for (int s = 0; s < load_files.length; s++) {
+                ri[s] = new RecordingInfo(load_files[s].getAbsolutePath());
+            }
+            controller.exfeat = new ExtractFeatures(ri);
+            try {
+                addRecording(load_files);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    public void addFile() {
 
         if (load_recording_chooser == null) {
             load_recording_chooser = new JFileChooser();

@@ -15,7 +15,7 @@ public class OuterFrame extends JFrame
 
     public OuterFrame(Control controller)
     {
-        setTitle("jAudio Feature Extractor");
+        setTitle("File managing GUI");
         setDefaultCloseOperation(3);
         c = controller;
         Color blue = new Color(0.75F, 0.85F, 1.0F);
@@ -30,7 +30,6 @@ public class OuterFrame extends JFrame
         fileMenu.add(c.exitAction);
         JMenu recordingMenu = new JMenu("Recording");
         recordingMenu.add(c.addRecordingsAction);
-        recordingMenu.add(c.removeRecordingsAction);
         recordingMenu.add(c.viewFileInfoAction);
         JMenu helpMenu = new JMenu("About");
         helpMenu.add(c.aboutAction);

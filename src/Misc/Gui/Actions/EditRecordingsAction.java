@@ -2,7 +2,7 @@
 package Misc.Gui.Actions;
 
 import Misc.Gui.Controller.Control;
-import Misc.Gui.OuterFrame;
+import Misc.Gui.Main.OuterFrame;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
 

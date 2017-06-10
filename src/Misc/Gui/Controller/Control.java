@@ -3,7 +3,7 @@ package Misc.Gui.Controller;
 
 import ML.featureDetection.NormalizeBeat;
 import Misc.Gui.Actions.*;
-import Misc.Gui.ExtractFeatures;
+import Misc.Gui.Main.ExtractFeatures;
 import javax.swing.JTable;
 
 public class Control

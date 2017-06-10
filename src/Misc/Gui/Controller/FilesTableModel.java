@@ -11,7 +11,7 @@ public class FilesTableModel extends DefaultTableModel
     public FilesTableModel(Object columnNames[], int rows, int heartRate)
     {
         super(columnNames, rows);
-        addColumn("heartRate") ;
+//        addColumn("heartRate") ;
     }
 
     public void fillTable(RecordingInfo recording_list[])

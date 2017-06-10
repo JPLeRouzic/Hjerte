@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JTable;
 
-public class RemoveRecordingAction extends AbstractAction
+public class RemoveRecordingAction 
 {
 
     static final long serialVersionUID = 1L;
@@ -17,7 +17,6 @@ public class RemoveRecordingAction extends AbstractAction
 
     public RemoveRecordingAction(JTable recordTable)
     {
-        super("Delete Recording");
         recordingTable = recordTable ;
     }
 
@@ -35,25 +34,15 @@ public class RemoveRecordingAction extends AbstractAction
         this.recordingTable = recordingTable;
     }
 
-    public void actionPerformed(ActionEvent e)
+    public void removeFiles()
     {
-        int selected_rows[] = recordingTable.getSelectedRows();
-        for(int i = 0; i < selected_rows.length; i++) {
-            controller.exfeat.recordingInfo[selected_rows[i]] = null;
+        int selected_rows = recordingTable.getRowCount();
+        for(int i = 0; i < selected_rows; i++) {
+            controller.exfeat.recordingInfo[i] = null;
         }
 
-        Object results[] = GeneralMethods.removeNullEntriesFromArray(controller.exfeat.recordingInfo);
-        if(results != null)
-        {
-            controller.exfeat.recordingInfo = new RecordingInfo[results.length];
-            for(int i = 0; i < results.length; i++) {
-                controller.exfeat.recordingInfo[i] = (RecordingInfo)results[i];
-            }
-
-        } else
-        {
-            controller.exfeat.recordingInfo = null;
-        }
+        controller.exfeat.recordingInfo = null;
+        
         controller.filesList.fillTable(controller.exfeat.recordingInfo);
         controller.filesList.fireTableDataChanged();
     }

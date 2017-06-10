@@ -23,8 +23,6 @@ public final class MainPanel extends JPanel
 
     JButton extract_features_button;
     JButton classify_button;
-    private final JButton add_recordings_button = new JButton("Add Recordings");
-    private final JButton delete_recordings_button = new JButton("Delete Recordings");
 
     private final Control controll;
 
@@ -38,13 +36,8 @@ public final class MainPanel extends JPanel
         add(new JLabel("RECORDINGS:"), "North");
         recordings_panel = null;
         setUpFilesTable();
-        JPanel button_panel = new JPanel(new GridLayout(4, 2, horizontal_gap, vertical_gap));
+        JPanel button_panel = new JPanel(new GridLayout(2, 2, horizontal_gap, vertical_gap));
         button_panel.setBackground(blue);
-        add_recordings_button.addActionListener(controll.addRecordingsAction);
-        button_panel.add(add_recordings_button);
-
-        delete_recordings_button.addActionListener(controll.removeRecordingsAction);
-        button_panel.add(delete_recordings_button);
 
         extract_features_button = new JButton("Extract Features and train");
         button_panel.add(extract_features_button);
@@ -63,31 +56,51 @@ public final class MainPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent event) {
-        Classify classify;
-        GenObs genoa = new GenObs();
-        // Train
         if (event.getSource().equals(extract_features_button)) {
+            // add files to train
+            controll.addRecordingsAction.addFile();
+            
+            // Train
+            GenObs genoa = new GenObs();
             ArrayList obs = genoa.generateObsFromFiles(controll);
             ExtrFeatrsTrain.trainOnFeatures(obs);
             // At this point we can manage the trained HMM at EntryPoint.hmmTrain
-    		SwingUtilities.invokeLater(new Runnable(){
-    			public void run(){
-    				//instance manager
-    				HMMmanager manager = new HMMmanager();
-    				manager.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    				manager.setSize(new Dimension(400,400));
-    				manager.setVisible(true);
-                                
-                                manager.showHMM() ;
-    			}
-    		});
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    //instance manager
+                    HMMmanager manager = new HMMmanager();
+                    manager.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    manager.setSize(new Dimension(400, 400));
+                    manager.setVisible(true);
+
+                    manager.showHMM();
+                }
+            });
 
             // Classify            
         } else if (event.getSource().equals(classify_button)) {
+            Classify classify;
+
+            // remove files
+            controll.removeRecordingsAction.removeFiles();
+
+            // add one file to classify
+            controll.addRecordingsAction.addFile();
+
             classify = new Classify(
                     controll,
                     outer_frame,
                     controll.exfeat.recordingInfo);
+
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    //instance manager
+                    Similarity simi = new Similarity();
+                    simi.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    simi.setSize(new Dimension(400, 400));
+                    simi.setVisible(true);
+                }
+            });
         }
     }
 
