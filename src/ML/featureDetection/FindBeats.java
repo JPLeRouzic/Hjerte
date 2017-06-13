@@ -44,6 +44,11 @@ public class FindBeats {
 
     // number of time a signal normalisation was needed
     public int normalizeCount;
+    
+    // Used to do a rough evaluation of beat rate and treshold, before aiming at a more precise evaluation
+    int RBF_Beats = 0;
+    float RBF_treshhold = 0 ;
+    
 
     /**
      */
@@ -113,9 +118,14 @@ public class FindBeats {
         // evaluating the tresholdS1        
         treshFind = 6;
 
+        earlyS1 = sampling_rate * (float) 0.5;
+        lateS1 = sampling_rate * (float) 1.5;
+
+        // Rough evaluation of treshold, if beat rate not provided in advance
         if (beatSec == 0) {
-            // assume 60
-            beatSec = 60;
+            roughBeatFind(dataIn, earlyS1, lateS1, s2Shift, ave, max, nbSecInFile);
+            beatSec = RBF_Beats ;
+            treshFind = RBF_treshhold ;
         }
 
         int floor_low, floor_high, ceiling_low, ceiling_high;
@@ -123,9 +133,6 @@ public class FindBeats {
         floor_high = (int) (beatSec * 0.83335);      // 50 events per minute 
         ceiling_low = (int) (beatSec * 1.33335);     // 80 events per minute 
         ceiling_high = (int) (beatSec * 2.6667);   // 160 events per minute 
-
-        earlyS1 = sampling_rate * (float) 0.5;
-        lateS1 = sampling_rate * (float) 1.5;
 
         while (treshFind > 0.05) {
             events = calcBeatFind(dataIn, earlyS1, lateS1, s2Shift, treshFind);
@@ -206,6 +213,7 @@ public class FindBeats {
      * @param treshFnd
      * @param ave
      * @param max
+     *
      * @return
      */
     ArrayList calcBeatFind(
@@ -296,8 +304,10 @@ public class FindBeats {
         return normalizedData;
     }
 
-    /*
+    /**
      * Average the past "windowLength" slots in "dataIn" before "idxGlbal"
+     * This is because the number must be an average of past data
+     * 
      */
     private float lastWinAve(float[] dataIn, int idxGlbal, int windowLength) {
         int cnt = 0, idxWindow;
@@ -436,5 +446,83 @@ public class FindBeats {
             }
         }
         return binary;
+    }
+
+    /**
+     * This aims at finding a reasonable treshold
+     *
+     * @param dataIn
+     * @param earlyS1
+     * @param lateS1
+     * @param s2Shift
+     * @param f
+     * @return
+     */
+    void roughBeatFind(
+            float[] dataIn,
+            float earlyS1, float lateS1,
+            float s2Shift,
+            float average,
+            float max,
+            int nbSecInFile
+    ) {
+        int beats ;
+        RBF_Beats = 0;
+        RBF_treshhold = max ;
+        ArrayList events;
+
+        do {
+            RBF_treshhold = (float) (RBF_treshhold * 0.8) ;
+            events = calcBeatRough(dataIn, earlyS1, lateS1, s2Shift, RBF_treshhold, average, max);
+            beats = events.size();
+            RBF_Beats = (beats * 60) / nbSecInFile ;
+        } while (((RBF_Beats < 50) || (RBF_Beats > 150)) && (RBF_treshhold > average));
+    }
+
+    ArrayList calcBeatRough(
+            float[] dataIn,
+            float earlyS1, float lateS1,
+            float s2Shift,
+            float treshold,
+            float ave, 
+            float max
+    ) {
+        ;
+        int idxGlobal;
+        ArrayList BeatS1Rate = new ArrayList();
+        float lastAverage;
+
+        idxGlobal = 1;
+        while (idxGlobal < dataIn.length) {
+            lastAverage = lastWinAve(dataIn, idxGlobal, 30);
+            
+            if ((dataIn[idxGlobal] < treshold) && (lastAverage < treshold)) {
+                    // Both dataIn and lastAverage are below treshold
+                    // So no notable event
+                
+            }
+            
+            if ((dataIn[idxGlobal] < treshold) && (lastAverage > treshold)) {
+                // We are going down
+                             
+                BeatS1Rate.add(Integer.valueOf(idxGlobal));
+
+                // try to move idxGlobal a bit, in a effort to thwart spikes
+                idxGlobal += s2Shift;
+            }
+
+            if ((dataIn[idxGlobal] > treshold) && (lastAverage < treshold)) {
+                // We are going up
+            }
+            
+            if ((dataIn[idxGlobal] > treshold) && (lastAverage > treshold)) {
+                    // Both dataIn and lastAverage are above treshold
+                    // So no notable event
+                
+            }
+            
+            idxGlobal++;
+        }
+        return BeatS1Rate;
     }
 }
