@@ -51,13 +51,20 @@ public class Segmentation {
 
             // This possible S1 event is situated between two S1 events in the 
             // ProbableBeats List,
-            // We try to find which S1 it is the closest.
+            // We try to find which S1 is the closest.
             segmentTheBeat(itrMB, norm);
 
         } while (true);
         return;
     }
 
+    /**
+     * This possible S1 event is situated between two S1 events in the
+     * ProbableBeats List, We try to find which S1 is the closest.
+     *
+     * @param S1mb
+     * @param norm
+     */
     private void segmentTheBeat(Iterator S1mb, FindBeats norm) {
         ArrayList mb = norm.getMoreBeats();
         ArrayList pb = norm.getProbableBeats();
@@ -66,6 +73,7 @@ public class Segmentation {
         Integer S1MB = null;
         Observation eventHMM = null;
 
+        int averageDistance = norm.getNormalizedData().length / norm.getProbableBeats().size();
         Iterator iterPB = pb.iterator();
         // Get the first element of ProbableBeats, that arrives sooner than S1MB
         if (iterPB.hasNext()) {
@@ -77,31 +85,39 @@ public class Segmentation {
                 nextPB = (Integer) iterPB.next();
             } else {
                 // flag was found to be false, now make it true
-                flag = true ;
+                flag = true;
             }
             // Analyse one beat to discern how many events there are inside
             // one event at a time
             while (S1mb.hasNext()) {
                 S1MB = (Integer) S1mb.next();
-                if(S1MB.intValue() > nextPB.intValue()) {
-                    prevPB = nextPB ;
-                    flag = true ;
-                    cnt = 1 ;
-                    // Nothing found in this PB event, go to the next
-                    break;                    
-                }
-                // S1MB = 1650, prevPB = 2534, nextPB = 3626
-                eventHMM = analalyse(prevPB, nextPB, S1MB, norm, cnt);
-                if (eventHMM != null) {
-                    addEvents(eventHMM);
-
-                    // Event suffix progresses
-                    cnt++;
-                } else {
-                    flag = false ;
+                if (S1MB.intValue() > nextPB.intValue()) {
+                    prevPB = nextPB;
+                    flag = true;
+                    cnt = 1;
                     // Nothing found in this PB event, go to the next
                     break;
                 }
+                // S1 appears in the first quarter of the heartbeat
+                // S2 in the second quarter, etc..
+                // Event suffix progresses
+
+                float un = averageDistance / (nextPB - prevPB);
+//                cnt = 1;
+                do {
+                    eventHMM = analalyse(prevPB, nextPB, S1MB, norm, cnt);
+                    if (eventHMM != null) {
+                        addEvents(eventHMM);
+                        cnt++ ;
+                    } else {
+                        // Nothing found in this PB event, go to the next
+                        ;
+                    }
+                    un = un - 1 ;
+                } while (un > 1.5) ;
+/*
+                // S1MB = 1260, prevPB = 1280, nextPB = 3342
+*/                
             }
         }
         return;
@@ -160,7 +176,7 @@ public class Segmentation {
             } else {
                 return eventHMM; // 
             }
-        } 
+        }
         return null; // not continue
     }
 }
