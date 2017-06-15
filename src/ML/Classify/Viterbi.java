@@ -1,7 +1,6 @@
 package ML.Classify;
 
 import Misc.Gui.Main.EntryPoint;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
@@ -15,7 +14,6 @@ import java.util.Set;
  * @author jplr
  */
 public class Viterbi {
-    
 
     /**
      * We look at each hidden state in hmmTest to find if it also belongs to
@@ -105,7 +103,6 @@ public class Viterbi {
 //                    System.out.println("3, tokensTest: " + tokensTest[idxtst] + "  tokensTrain: " + tokensTrain[idxtrn]);
                         if (tokensTest[idxtst].trim().contentEquals(tokensTrain[idxtrn].trim())) {
 //                        System.out.println("4: tokensTest (" + tokensTest[idxtst].trim() + ") is equal to tokensTrain (" + tokensTrain[idxtrn].trim() + ")");
-                            EntryPoint.hmmTest.worksWell.add(tokensTest[idxtst].trim()) ;
                             similarity++;
                             // Now find next tokensTest
                             break ;

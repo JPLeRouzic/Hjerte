@@ -1,120 +1,100 @@
 package Misc.Gui.Main;
 
 import ML.Classify.PDefFeats;
-import Misc.AudioFeatures.RecordingInfo;
-import ML.featureDetection.NormalizeBeat;
+import java.util.Collection;
 import ML.featureDetection.TrainOne;
-import Misc.AudioFeatures.Cancel;
 import Misc.AudioFeatures.FromFileToAudio;
 import java.io.File;
+import ML.featureDetection.NormalizeBeat;
 import java.util.ArrayList;
+import Misc.AudioFeatures.RecordingInfo;
 
-public final class ExtractFeatures {
-
-    public RecordingInfo recordingInfo[];
-
-    public ExtractFeatures(RecordingInfo[] ri) {
-        recordingInfo = ri;
+public final class ExtractFeatures
+{
+    public RecordingInfo[] recordingInfo;
+    
+    public ExtractFeatures(final RecordingInfo[] ri) {
+        this.recordingInfo = ri;
     }
-
-    public ArrayList extractAllFiles(
-            RecordingInfo info[],
-            ExtractFeatures exFeat)
-            throws Exception, Throwable {
-        ArrayList obs = new ArrayList();
-
-        RecordingInfo arecordinginfo[] = new RecordingInfo[info.length];
+    
+    public ArrayList extractAllFiles(final RecordingInfo[] info, final ExtractFeatures exFeat) throws Exception, Throwable {
+        final ArrayList obs = new ArrayList();
+        final RecordingInfo[] arecordinginfo = new RecordingInfo[info.length];
         System.arraycopy(info, 0, arecordinginfo, 0, info.length);
-        recordingInfo = info;
-        if (recordingInfo == null) {
+        this.recordingInfo = info;
+        if (this.recordingInfo == null) {
             throw new Exception("No recordings available to extract features from.");
         }
-        NormalizeBeat norm = new NormalizeBeat();
-        for (int i = 0; i < recordingInfo.length; i++) {
-            File load_file = new File(recordingInfo[i].file_path);
-            PDefFeats predefFeatures = predefinedFeatures(load_file);
-            FromFileToAudio e = new FromFileToAudio(load_file);
-            float samples[] = e.getAudioSamples().getSamplesMixedDown();
-            TrainOne plugin = new TrainOne();
-            // obs is an ArrayList of ArrayList of Observation
-            ArrayList obs1 = plugin.extractFeature(
-                    samples, 
-                    e.getAudioSamples().getSamplingRate(), 
-                    predefFeatures,
-                    norm);
-System.out.println("File: " + load_file.getName() + ", beat rate= " + obs1.size());
-
-            obs.addAll(obs1);
+        final NormalizeBeat norm = new NormalizeBeat();
+        for (int i = 0; i < this.recordingInfo.length; ++i) {
+            final File load_file = new File(this.recordingInfo[i].file_path);
+            final PDefFeats predefFeatures = this.predefinedFeatures(load_file);
+            final FromFileToAudio e = new FromFileToAudio(load_file);
+            final float[] samples = e.getAudioSamples().getSamplesMixedDown();
+            final TrainOne plugin = new TrainOne();
+            final ArrayList obs2 = plugin.extractFeature(samples, e.getAudioSamples().getSamplingRate(), predefFeatures, norm);
+            System.out.println("File: " + load_file.getName() + ", beat rate= " + obs2.size());
+            obs.addAll(obs2);
         }
         EntryPoint.controller.filesList.fillTable(arecordinginfo);
         EntryPoint.controller.filesList.fireTableDataChanged();
-        // FIXME the rate does not appear
         EntryPoint.outer_frame.mainPanel.heart_sound_files_table.repaint();
         EntryPoint.outer_frame.mainPanel.repaint();
         EntryPoint.outer_frame.mainPanel.setVisible(true);
         return obs;
     }
-
-    public void validateFile(String definitions, String values)
-            throws Exception {
-        File feature_values_save_file = new File(values);
-        File feature_definitions_save_file = new File(definitions);
+    
+    public void validateFile(final String definitions, final String values) throws Exception {
+        final File feature_values_save_file = new File(values);
+        final File feature_definitions_save_file = new File(definitions);
         if (feature_values_save_file.exists() && !feature_values_save_file.canWrite()) {
-            throw new Exception((new StringBuilder()).append("Cannot write to ").append(values).append(".").toString());
+            throw new Exception("Cannot write to " + values + ".");
         }
         if (feature_definitions_save_file.exists() && !feature_definitions_save_file.canWrite()) {
-            throw new Exception((new StringBuilder()).append("Cannot write to ").append(definitions).append(".").toString());
-        } else {
-            return;
+            throw new Exception("Cannot write to " + definitions + ".");
         }
     }
-
-    private PDefFeats predefinedFeatures(File load_file) {
-        PDefFeats featrs = new PDefFeats();
-        String name = load_file.getName();
-        String delims = "[_]+";
-        
-        String[] tokens = name.split(delims);
-
-        int i = tokens.length - 2;
-        while(i > -1) {
-        if(tokens[i].contentEquals("plop")) {
-            featrs.plop = true ;
-        } else 
-        if(tokens[i].contentEquals("speech")) {
-            featrs.speech = true ;
-        } else 
-        if(tokens[i].contentEquals("noise")) {
-            featrs.noise = true ;
-        } else 
-        if(tokens[i].contentEquals("respiration")) {
-            featrs.respiration = true ;
-        } else 
-        if(tokens[i].contentEquals("variant")) {
-            featrs.variant = true ;
-        } else 
-        if(tokens[i].contentEquals("hum")) {
-            featrs.hum = true ;
-        } else 
-        if(tokens[i].contentEquals("saturation")) {
-            featrs.saturation = true ;
-        } else 
-        {
-            String numberOfBeats = tokens[i] ;
-            if(numberOfBeats.contains("beats")) {
-                String[] toktok = numberOfBeats.split("b");
-                Integer beats = Integer.valueOf(toktok[0]) ;
-                featrs.nbBeats = beats ;
-            } else
-            if(numberOfBeats.contains("sec")) {
-                String[] duration = numberOfBeats.split("s");
-                featrs.duration = Integer.valueOf(duration[0]) ;
-        } else {
-//            System.out.print("problem in predefinedFeatures");
+    
+    private PDefFeats predefinedFeatures(final File load_file) {
+        final PDefFeats featrs = new PDefFeats();
+        final String name = load_file.getName();
+        final String delims = "[_]+";
+        final String[] tokens = name.split(delims);
+        for (int i = tokens.length - 2; i > -1; --i) {
+            if (tokens[i].contentEquals("plop")) {
+                featrs.plop = true;
+            }
+            else if (tokens[i].contentEquals("speech")) {
+                featrs.speech = true;
+            }
+            else if (tokens[i].contentEquals("noise")) {
+                featrs.noise = true;
+            }
+            else if (tokens[i].contentEquals("respiration")) {
+                featrs.respiration = true;
+            }
+            else if (tokens[i].contentEquals("variant")) {
+                featrs.variant = true;
+            }
+            else if (tokens[i].contentEquals("hum")) {
+                featrs.hum = true;
+            }
+            else if (tokens[i].contentEquals("saturation")) {
+                featrs.saturation = true;
+            }
+            else {
+                final String numberOfBeats = tokens[i];
+                if (numberOfBeats.contains("beats")) {
+                    final String[] toktok = numberOfBeats.split("b");
+                    final Integer beats = Integer.valueOf(toktok[0]);
+                    featrs.nbBeats = beats;
+                }
+                else if (numberOfBeats.contains("sec")) {
+                    final String[] duration = numberOfBeats.split("s");
+                    featrs.duration = Integer.valueOf(duration[0]);
+                }
+            }
         }
-        }
-            i-- ;
-        }
-        return featrs ;
+        return featrs;
     }
 }

@@ -16,9 +16,8 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 public class Classify {
-
-    Segmentation segmt;
-    float similarity;
+    
+    float similarity ;
 
     public Classify(Control controller, OuterFrame outer_frame, RecordingInfo info[]) {
         ArrayList beats = null;
@@ -26,7 +25,6 @@ public class Classify {
         if (recordings == null) {
             String message = "No recordings available to extract features from.";
             JOptionPane.showConfirmDialog(null, message, "WARNING", 0);
-            return;
         }
         if (recordings.length > 1) {
             String message = "No more than one recording for classifying.";
@@ -75,7 +73,7 @@ public class Classify {
          * have an observation matrix as input to the training, The result of
          * training should fill in the state transition matrix.
          */
-        segmt = new Segmentation(cb);
+        Segmentation segmt = new Segmentation(cb);
 
         segmt.segmentation(cb, smplingRate);
 
@@ -94,16 +92,16 @@ public class Classify {
             int deux = (int) (size % 20);
             String suffix = String.valueOf(deux);
             obs.setNameSufx(suffix);
-            obsList.add(obs);
+            obsList.add(obs) ;
         }
 
-        EntryPoint.hmmTest = new HMM(obsList);
-        EntryPoint.hmmTest.train();
+            EntryPoint.hmmTest = new HMM(obsList);
+            EntryPoint.hmmTest.train(); 
 
-        Viterbi vt = new Viterbi();
+            Viterbi vt = new Viterbi();
 
-        similarity = vt.viterbi();
-        EntryPoint.hmmTest.setSimilarity(similarity);
+            similarity = vt.viterbi();
+            EntryPoint.hmmTest.setSimilarity(similarity) ;
 
     }
 }

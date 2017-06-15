@@ -45,6 +45,34 @@ import java.util.ArrayList;
 public class TrainOne {
 
     /**
+     * The times (S1, sys, S2, dia) will be our HMM states, and we must give an
+     * observation matrix as input to the training, The result of training
+     * should fill in the state transition matrix
+     *
+     * * The observation matrix has states in rows and observations in columns
+     */
+    static float[][] observation_matrix;
+
+    /*
+ * * The state transition matrix gives the probability of transitions from
+ * one state to the next
+ * It is a square matrix where each row and column corresponds to a state
+ * and where the intersection of a row and a colum gives the transition
+ * probability
+ * We take the convention that rows represent the current state and columns
+ * represent the next state
+     */
+    static float[][] state_transition_matrix;
+
+    /*
+    * Used to find most important frequencies in the sound file
+    */
+    final int ten = 10 ;
+    int freqIdx = 0 ;
+    float[] freqsStack = new float[ten] ;     
+    float[] binNbStack = new float[ten] ; 
+    
+    /**
      * Basic constructor that sets the definition and dependencies (and their
      * offsets) of this feature.
      */
@@ -130,6 +158,17 @@ public class TrainOne {
      */
     
     
+    /**
+     * Create an identical copy of this feature. This permits FeatureExtractor
+     * to use the prototype pattern to create new composite features using
+     * metafeatures.
+     *
+     * @return
+     */
+    public Object clone() {
+        return new TrainOne();
+    }
+
     private void enrichObs(ArrayList segmentedBeats, PDefFeats predefFeatures) {
                 // For the HMM to separate the observations in more cases than S1-S4, we need to
         // add a "minor" numbering to the "Sx" string.

@@ -18,6 +18,7 @@ public class Control
     public AddRecordingAction addRecordingsAction;
     public RemoveRecordingAction removeRecordingsAction;
     public AboutAction aboutAction;
+    public NormalizeBeat norm;
     JTable recordTable ;
 
     public Control()

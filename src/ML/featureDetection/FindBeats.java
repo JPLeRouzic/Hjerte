@@ -494,7 +494,7 @@ public class FindBeats {
 
         idxGlobal = 1;
         while (idxGlobal < dataIn.length) {
-            lastAverage = lastWinAve(dataIn, idxGlobal, 30);
+            lastAverage = lastWinAve(dataIn, idxGlobal, 200);
             
             if ((dataIn[idxGlobal] < treshold) && (lastAverage < treshold)) {
                     // Both dataIn and lastAverage are below treshold

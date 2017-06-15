@@ -1,39 +1,31 @@
 package Misc.Gui.Main;
 
-import javax.swing.*;
-import java.awt.*;
-//  class
+import java.awt.Container;
+import java.awt.Component;
+import javax.swing.JScrollPane;
+import java.awt.LayoutManager;
+import java.awt.GridLayout;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JFrame;
 
-public class Similarity extends JFrame {
-    //  four buttons, four fields, four panels, and text area
-
+public class Similarity extends JFrame
+{
     JTextArea textArea;
-
-    // constructor
+    
     public Similarity() {
-
         super("Similarity Manager");
-
-        //  Panel
-        JPanel panel = new JPanel();
+        final JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(6, 1, 5, 5));
-
-        // field panel
-        JPanel fieldPanel = new JPanel();
-        textArea = new JTextArea("", 50, 30);
-        textArea.setEditable(false);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        // 
-        JScrollPane scroll = new JScrollPane(textArea);
-        scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        // 
-        fieldPanel.add(panel, BorderLayout.NORTH);
-        fieldPanel.add(scroll, BorderLayout.CENTER);
-
+        final JPanel fieldPanel = new JPanel();
+        (this.textArea = new JTextArea("", 50, 30)).setEditable(false);
+        this.textArea.setLineWrap(true);
+        this.textArea.setWrapStyleWord(true);
+        final JScrollPane scroll = new JScrollPane(this.textArea);
+        scroll.setVerticalScrollBarPolicy(20);
+        scroll.setHorizontalScrollBarPolicy(32);
+        fieldPanel.add(panel, "North");
+        fieldPanel.add(scroll, "Center");
         this.setContentPane(fieldPanel);
-
     }
-
 }

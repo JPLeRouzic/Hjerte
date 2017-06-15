@@ -40,7 +40,7 @@ public class HMM
     
     public ArrayList worksWell;
     ArrayList worksBadly;
-
+    
     public HMM(ArrayList obb)
     {
         obs = null;
@@ -56,23 +56,22 @@ public class HMM
         worksWell = new ArrayList();
         worksBadly = new ArrayList();
     }
-
+    
     public void train()
     {
         String prevState = null;
         Observation currentObservation = null;
-        Trainer trn = new Trainer();
-        prevState = obs.currentStateTag();
-        obs.gotoNextObservation();
-        while(obs.hasNext()) 
-        {
-            String currentState = obs.currentStateTag();
-            currentObservation = obs.currentObservation();
-            obs.incPtr();
+        final Trainer trn = new Trainer();
+        prevState = this.obs.currentStateTag();
+        this.obs.gotoNextObservation();
+        while (this.obs.hasNext()) {
+            final String currentState = this.obs.currentStateTag();
+            currentObservation = this.obs.currentObservation();
+            this.obs.incPtr();
             prevState = trn.parseTrainer(this, prevState, currentState, currentObservation);
         }
     }
-
+    
     /**
      * The class initialization has read observation 
      * This method sends them in a list
@@ -81,15 +80,13 @@ public class HMM
      */
     public ArrayList getObsrvSeq()
     {
-        obs.resetPtr() ;
         ArrayList list = new ArrayList();
         for(; obs.hasNext(); list.add(obs.currentObservation())) {
             obs.gotoNextObservation();
         }
-
         return list;
     }
-
+    
     /*
      * Calculates probability of (State|Observation), that this state corresponds to that Observation
      */
@@ -103,7 +100,7 @@ public class HMM
         float un = deux / trois ;
         return (float) un;
     }
-
+    
     /*
      * Calculates probability of (State1|State2), of transition from state1 to state2
      */
@@ -114,7 +111,7 @@ public class HMM
         float trois = (float)(HMMutilities.countStates(hidnStatesCounts, state1) + vocabSize);
         return deux / trois ;
     }
-
+    
     /* 
      * This method computes the probability that State is the appropriate state for this Observation,
      * given the probabilities before it (found in prevMap) 
@@ -136,9 +133,8 @@ public class HMM
             String prevTag = (String)iterator.next();
             Node prevNode = (Node)prevMap.get(prevTag);
             float prevProb = prevNode.probability;
-            prevProb *= calcPriorProbState(prevTag, state);
-            if(prevProb >= maxProb)
-            {
+            prevProb *= this.calcPriorProbState(prevTag, state);
+            if (prevProb >= maxProb) {
                 maxProb = prevProb;
                 n.parent = prevNode;
             }
@@ -146,12 +142,12 @@ public class HMM
         n.probability = maxProb * calcLikelihood(state, word);
         return n;
     }
-
-    public void setSimilarity(float simil) {
-        similarity = simil ;
+    
+    public void setSimilarity(final float simil) {
+        this.similarity = simil;
     }
-
+    
     public String getSimilarity() {
-        return String.valueOf(similarity) ;
+        return String.valueOf(this.similarity);
     }
 }

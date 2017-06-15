@@ -1,54 +1,45 @@
-
 package ML.Classify;
 
 import java.util.ArrayList;
 
 public class Observations
 {
-    ArrayList observ; // ArrayList of Observations
+    ArrayList observ;
     private int pointer;
-
-    public Observations(ArrayList obs)
-    {
-        observ = obs;
-        pointer = 0;
+    
+    public Observations(final ArrayList obs) {
+        this.observ = obs;
+        this.pointer = 0;
     }
-
-    public boolean hasNext()
-    {
-        return observ.size() > 0 && pointer < observ.size();
+    
+    public boolean hasNext() {
+        return this.observ.size() > 0 && this.pointer < this.observ.size();
     }
-
-    public String currentStateTag()
-    {
-        if(observ.size() > 0 && pointer < observ.size())
-        {
-            String name = currentObservation().getFullName();
+    
+    public String currentStateTag() {
+        if (this.observ.size() > 0 && this.pointer < this.observ.size()) {
+            final String name = this.currentObservation().getFullName();
             return name;
-        } else
-        {
-            return null;
         }
+        return null;
     }
-
+    
     public Observation currentObservation()
     {
         if(observ.size() > 0 && pointer < observ.size())
         {
             Observation obs = (Observation)observ.get(pointer);
             return obs;
-        } else
-        {
-            return null;
+        }
+        return null;
+    }
+    
+    public void gotoNextObservation() {
+        if (this.observ.size() > 0 && this.pointer - 1 < this.observ.size()) {
+            ++this.pointer;
         }
     }
-
-    public void gotoNextObservation()
-    {
-        if(observ.size() > 0 && pointer - 1 < observ.size())
-            pointer++;
-    }
-
+    
     public Observation next()
     {
         if(observ.size() > 0 && pointer < observ.size())
@@ -56,19 +47,16 @@ public class Observations
             Observation obs = (Observation)observ.get(pointer);
             pointer++;
             return obs;
-        } else
-        {
-            return null;
         }
+        return null;
     }
-
-    public void incPtr()
-    {
-        pointer++;
+    
+    public void incPtr() {
+        ++this.pointer;
     }
-
+    
     int size() {
-        return observ.size() ;
+        return this.observ.size();
     }
     
     public Observation get(int i)
@@ -77,14 +65,11 @@ public class Observations
         {
             Observation obs = (Observation)observ.get(i);
             return obs;
-        } else
-        {
-            return null;
         }
+        return null;
     }
-
+    
     public void resetPtr() {
-        pointer = 0 ;
+        this.pointer = 0;
     }
-
 }

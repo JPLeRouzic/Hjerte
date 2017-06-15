@@ -1,11 +1,7 @@
-
 package Misc.Gui.Main;
 
 import ML.Train.HMM;
 import Misc.Gui.Controller.Control;
-
-// Referenced classes of package Misc.Gui:
-//            OuterFrame
 
 public class EntryPoint
 {
@@ -13,18 +9,10 @@ public class EntryPoint
     public static OuterFrame outer_frame;
     public static HMM hmmTrain;
     public static HMM hmmTest;
-
-    public EntryPoint()
-    {
+    
+    public static void main(final String[] args) throws Exception {
+        EntryPoint.controller = new Control();
+        (EntryPoint.outer_frame = new OuterFrame(EntryPoint.controller)).repaint();
+        EntryPoint.outer_frame.featureSelectorPanel();
     }
-
-    public static void main(String args[])
-        throws Exception
-    {
-        controller = new Control();
-        outer_frame = new OuterFrame(controller);
-        outer_frame.repaint();
-        outer_frame.featureSelectorPanel();
-    }
-
 }
