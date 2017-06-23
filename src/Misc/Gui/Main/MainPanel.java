@@ -64,6 +64,7 @@ public final class MainPanel extends JPanel implements ActionListener
         if (event.getSource().equals(this.extract_features_button)) {
             this.controll.addRecordingsAction.addFile();
             final GenObs genoa = new GenObs();
+        if(this.controll.exfeat != null) {
             final ArrayList obs = genoa.generateObsFromFiles(this.controll);
             ExtrFeatrsTrain.trainOnFeatures(obs);
             SwingUtilities.invokeLater(new Runnable() {
@@ -77,9 +78,11 @@ public final class MainPanel extends JPanel implements ActionListener
                 }
             });
         }
+        }
         else if (event.getSource().equals(this.classify_button)) {
             this.controll.removeRecordingsAction.removeFiles();
             this.controll.addRecordingsAction.addFile();
+            if(this.controll.exfeat != null) {
             final Classify classify = new Classify(this.controll, this.outer_frame, this.controll.exfeat.recordingInfo);
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -120,6 +123,7 @@ public final class MainPanel extends JPanel implements ActionListener
                     simi.setVisible(true);
                 }
             });
+            }
         }
     }
     

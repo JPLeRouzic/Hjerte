@@ -33,7 +33,7 @@ public final class ExtractFeatures
             final float[] samples = e.getAudioSamples().getSamplesMixedDown();
             final TrainOne plugin = new TrainOne();
             final ArrayList obs2 = plugin.extractFeature(samples, e.getAudioSamples().getSamplingRate(), predefFeatures, norm);
-            System.out.println("File: " + load_file.getName() + ", beat rate= " + obs2.size());
+            System.out.println("File: " + load_file.getName() );
             obs.addAll(obs2);
         }
         EntryPoint.controller.filesList.fillTable(arecordinginfo);
