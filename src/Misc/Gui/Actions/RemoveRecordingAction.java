@@ -22,8 +22,10 @@ public class RemoveRecordingAction
         for (int selected_rows = this.recordingTable.getRowCount(), i = 0; i < selected_rows; ++i) {
             this.controller.exfeat.recordingInfo[i] = null;
         }
+        if(this.controller.exfeat != null) {
         this.controller.exfeat.recordingInfo = null;
-        this.controller.filesList.fillTable(this.controller.exfeat.recordingInfo);
+        this.controller.filesList.fillTable(this.controller.exfeat.recordingInfo);        
         this.controller.filesList.fireTableDataChanged();
+    }
     }
 }
