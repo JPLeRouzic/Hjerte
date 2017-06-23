@@ -85,13 +85,19 @@ public final class MainPanel extends JPanel implements ActionListener
                 @Override
                 public void run() {
                     final Similarity simi = new Similarity();
+                    float score ;
+                    
                     simi.textArea.setText("Similarity score (between 0 and 1)\n");
                     final String similScore = EntryPoint.hmmTest.getSimilarity();
-                    if (Float.parseFloat(similScore) < 0.5) {
+                    score = Float.parseFloat(similScore) ;                    
+                    if (score < 0.5) {
                         simi.textArea.setText("The similarity score of the tested file is too low\n");
+                    } else
+                    if ((score > 0.5) && (score < 0.75)) {
+                        simi.textArea.setText("The tested file has some similarity to the training set\n");
                     }
                     else {
-                        simi.textArea.setText("The tested file has some similarity to the training set\n");
+                        simi.textArea.setText("The tested file has good similarity to the training set\n");
                     }
                     simi.textArea.append("Value found: " + similScore);
                     simi.textArea.append("\n");
