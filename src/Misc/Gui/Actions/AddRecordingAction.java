@@ -29,7 +29,6 @@ public class AddRecordingAction extends AbstractAction
         this.controller = c;
     }
     
-    @Override
     public void actionPerformed(final ActionEvent e) {
         if (this.load_recording_chooser == null) {
             (this.load_recording_chooser = new JFileChooser()).setCurrentDirectory(new File("."));

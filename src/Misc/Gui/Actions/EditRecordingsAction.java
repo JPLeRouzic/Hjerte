@@ -25,7 +25,6 @@ public class EditRecordingsAction extends AbstractAction
         this.of_ = of;
     }
     
-    @Override
     public void actionPerformed(final ActionEvent e) {
         final int selected_row = this.recordings_table.getSelectedRow();
         if (selected_row < 0) {

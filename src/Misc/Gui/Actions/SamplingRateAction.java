@@ -14,7 +14,6 @@ public class SamplingRateAction extends AbstractAction
         this.sampleRateIndex = 2;
     }
     
-    @Override
     public void actionPerformed(final ActionEvent e) {
         for (int i = 0; i < this.samplingRates.length; ++i) {
             if (e.getSource().equals(this.samplingRates[i])) {

@@ -54,11 +54,4 @@ package Misc.Gui.HMM;
     	public String getHMMUsage(){
     		return hmmUsage;  
     	}
-    	
-    	// to string method
-        @Override
-    	public String toString(){
-    		return String.format("%s, %s, %s, %s", getAuthor(), 
-    			getHMM(), getPortFolio(), getHMMUsage());
-    	}
     }

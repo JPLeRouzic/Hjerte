@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
@@ -17,24 +18,16 @@ public class HMMmanager extends JFrame {
     //  four buttons, four fields, four panels, and text area
 
     private JButton addHMMButton, displayHMMsButton, findHMMButton, deleteHMMButton;
-    private JLabel authorLabel, hmmNameLabel, portFolioLabel, trackUsageLabel;
-    private JTextField authorField, hmmNameField, portFolioField, trackUsageField;
-    private JPanel fieldPanelAuthor, fieldPanelHMM, fieldPanelPortFolio, fieldPanelHMMUsage;
+    private JLabel hmmNameLabel;
+    private JTextField hmmNameField;
+    private JPanel fieldPanelHMM;
     private JTextArea textArea;
+    private static JFileChooser file_chooser;
 
     // constructor
     public HMMmanager() {
 
         super("HMM Manager");
-
-        //  author name label and field
-        authorLabel = new JLabel("Author Name ");
-        authorField = new JTextField();
-        authorField.setPreferredSize(new Dimension(180, 15));
-        fieldPanelAuthor = new JPanel();
-        fieldPanelAuthor.setLayout(new GridLayout(1, 2, 5, 5));
-        fieldPanelAuthor.add(authorLabel);
-        fieldPanelAuthor.add(authorField);
 
         // hmmName name label and field
         hmmNameLabel = new JLabel("HMM Title ");
@@ -45,28 +38,10 @@ public class HMMmanager extends JFrame {
         fieldPanelHMM.add(hmmNameLabel);
         fieldPanelHMM.add(hmmNameField);
 
-        //  portFolio name label and field
-        portFolioLabel = new JLabel("PortFolio Name ");
-        portFolioField = new JTextField();
-        portFolioField.setPreferredSize(new Dimension(180, 15));
-        fieldPanelPortFolio = new JPanel();
-        fieldPanelPortFolio.setLayout(new GridLayout(1, 2, 5, 5));
-        fieldPanelPortFolio.add(portFolioLabel);
-        fieldPanelPortFolio.add(portFolioField);
-
-        //  track length name label and field
-        trackUsageLabel = new JLabel("HMM usage");
-        trackUsageField = new JTextField("", 16);
-        portFolioField.setPreferredSize(new Dimension(180, 15));
-        fieldPanelHMMUsage = new JPanel();
-        fieldPanelHMMUsage.setLayout(new GridLayout(1, 2, 5, 5));
-        fieldPanelHMMUsage.add(trackUsageLabel);
-        fieldPanelHMMUsage.add(trackUsageField);
-
         //  four buttons
-        addHMMButton = new JButton(" Add HMM ");
+        addHMMButton = new JButton(" Save HMM ");
         displayHMMsButton = new JButton(" Display HMMs ");
-        findHMMButton = new JButton(" Find HMM ");
+        findHMMButton = new JButton(" Load HMM ");
         deleteHMMButton = new JButton(" Delete HMM ");
 
         // first two buttons
@@ -84,10 +59,7 @@ public class HMMmanager extends JFrame {
         //  Panel
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(6, 1, 5, 5));
-        panel.add(fieldPanelAuthor);
         panel.add(fieldPanelHMM);
-        panel.add(fieldPanelPortFolio);
-        panel.add(fieldPanelHMMUsage);
         panel.add(fieldPanelButtonsA);
         panel.add(fieldPanelButtonsB);
 
@@ -115,75 +87,63 @@ public class HMMmanager extends JFrame {
         deleteHMMButton.addActionListener(handler);
     }
 
+    public JTextArea getTextArea() {
+        return textArea;
+    }
+
     // button handler class
     private class ButtonHandler implements ActionListener {
-        //  override action performed
 
-        @Override
         public void actionPerformed(ActionEvent event) {
-            String length ;
-            String author = authorField.getText();
-            String portFolio = portFolioField.getText();
             String hmmName = hmmNameField.getText();
 
-            // add HMM button
-            if (event.getActionCommand().contentEquals(" Add HMM ")) {
+            if (event.getActionCommand().contentEquals(" Load HMM ")) {
+                loadHMMProxy();
+            } else if (event.getActionCommand().contentEquals(" Save HMM ")) {
+                saveHMMProxy(hmmName);
+            } else {
+            }
+        }
+    }
 
-                FileWriter fw = null;
-                // exception handling
-                    length = trackUsageField.getText();
+    public void saveHMMProxy(String hmmName) {
+        String path = null;
+        if (this.file_chooser == null) {
+            (this.file_chooser = new JFileChooser()).setCurrentDirectory(new File("."));
+        }
+        final int dialog_result = this.file_chooser.showOpenDialog(null);
+        if (dialog_result == 0) {
+            FileWriter fw = null;
+            try {
+                File to_save_to = this.file_chooser.getSelectedFile();
+                path = to_save_to.getPath();
+                final File dest = new File(path);
+                fw = new FileWriter(dest);
+                SaveHMM.saveHMM(hmmName, fw);
+                fw.close();
+            } catch (IOException ex) {
+                Logger.getLogger(HMMmanager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 
-                    //  if length is empty
-                if (length.isEmpty()) {
-                    textArea.setText("HMM Usage must be not empty.");
-                    return;
-                }
-                // author field is empty
-                if (author.trim().length() == 0) {
-                    textArea.setText("Author Field must be not empty.");
-                    return;
-                }
-                // portFolio field is empty
-                if (portFolio.trim().length() == 0) {
-                    textArea.setText("PortFolio Field must be not empty.");
-                    return;
-                }
-                // hmmName field is empty
-                if (hmmName.trim().length() == 0) {
-                    textArea.setText("HMM Field must be not empty.");
-                    return;
-                }
-                HMMrecord list = new HMMrecord(author, hmmName, portFolio, length);
-                textArea.setText(list.toString());
-
-                //  Save this HMM
-                try {
-                    File dest = new File("./HMM/" + hmmName.toString());
-                    fw = new FileWriter(dest);
-                    String sep = System.getProperty("line.separator");
-//                    fw.write((new StringBuilder()).append("<?xml version=\"1.0\"?>").append(sep).toString());
-                    Collection values = EntryPoint.hmmTrain.transitionsProbs.values();
-                    Set keys = EntryPoint.hmmTrain.transitionsProbs.keySet();
-                    Object[] valuesArray = values.toArray();
-                    Object[] valuesKeys = keys.toArray();
-                    for (int yuu = 0; yuu < values.size(); yuu++) {
-
-                        fw.write((new StringBuilder()).append(valuesKeys[yuu].toString()).append(sep).toString());
-
-                        fw.write((new StringBuilder()).append(" " + valuesArray[yuu].toString()).append(sep).toString());
-                    }
-
-//
-                } catch (IOException ex) {
-                    Logger.getLogger(HMMmanager.class.getName()).log(Level.SEVERE, null, ex);
-                } finally {
-                    try {
-                        fw.close();
-                    } catch (IOException ex) {
-                        Logger.getLogger(HMMmanager.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-
+    public static void loadHMMProxy() {
+        String path = null;
+        if (file_chooser == null) {
+            (file_chooser = new JFileChooser()).setCurrentDirectory(new File("."));
+        }
+        final int dialog_result = file_chooser.showOpenDialog(null);
+        if (dialog_result == 0) {
+            FileReader fr = null;
+            try {
+                File to_load = file_chooser.getSelectedFile();
+                path = to_load.getPath();
+                final File dest = new File(path);
+                fr = new FileReader(dest);
+                LoadHMM.loadHMM(fr);
+                fr.close();
+            } catch (IOException ex) {
+                Logger.getLogger(HMMmanager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -195,10 +155,8 @@ public class HMMmanager extends JFrame {
         Object[] valuesKeys = keys.toArray();
         for (int yuu = 0; yuu < values.size(); yuu++) {
 
-//             System.out.println(valuesKeys[yuu]);
             textArea.append(valuesKeys[yuu].toString());
 
-//             System.out.println(valuesArray[yuu]);
             textArea.append(" " + valuesArray[yuu].toString());
             textArea.append("   \n");
         }

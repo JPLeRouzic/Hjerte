@@ -11,7 +11,6 @@ public class ExitAction extends AbstractAction
         super("Exit");
     }
     
-    @Override
     public void actionPerformed(final ActionEvent e) {
         System.exit(0);
     }

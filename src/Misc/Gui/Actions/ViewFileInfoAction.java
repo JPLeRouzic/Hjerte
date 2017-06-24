@@ -25,7 +25,6 @@ public class ViewFileInfoAction extends AbstractAction
         this.recordings_table = jt;
     }
     
-    @Override
     public void actionPerformed(final ActionEvent e) {
         if (this.recordings_table == null) {
             final String message = "There is no recorded file!";

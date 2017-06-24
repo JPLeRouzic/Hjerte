@@ -25,8 +25,8 @@ public class OuterFrame extends JFrame
         this.getContentPane().setBackground(blue);
         (this.menu = new JMenuBar()).setBackground(blue);
         final JMenu fileMenu = new JMenu("File");
-        fileMenu.add(this.c.saveAction);
-        fileMenu.add(this.c.loadAction);
+//        fileMenu.add(this.c.saveAction);
+//        fileMenu.add(this.c.loadAction);
         fileMenu.addSeparator();
         fileMenu.addSeparator();
         fileMenu.add(this.c.exitAction);

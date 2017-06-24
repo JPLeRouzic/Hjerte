@@ -34,6 +34,7 @@ public final class MainPanel extends JPanel implements ActionListener {
     public JTable heart_sound_files_table;
     JButton extract_features_button;
     JButton classify_button;
+    JButton loadHMM_button;
     private final Control controll;
 
     public MainPanel(final OuterFrame aThis) {
@@ -48,10 +49,12 @@ public final class MainPanel extends JPanel implements ActionListener {
         this.setUpFilesTable();
         final JPanel button_panel = new JPanel(new GridLayout(2, 2, horizontal_gap, vertical_gap));
         button_panel.setBackground(blue);
-        button_panel.add(this.extract_features_button = new JButton("Extract Features and train"));
+        button_panel.add(this.extract_features_button = new JButton("Train a new ML"));
         this.extract_features_button.addActionListener(this);
-        button_panel.add(this.classify_button = new JButton("Classify new file with trained ML"));
+        button_panel.add(this.classify_button = new JButton("Classify a new file with trained ML"));
         this.classify_button.addActionListener(this);
+        button_panel.add(this.loadHMM_button = new JButton("load a previously trained ML"));
+        this.loadHMM_button.addActionListener(this);
         button_panel.add(new JLabel(""));
         this.add(button_panel, "South");
         this.addTableMouseListener();
@@ -59,7 +62,6 @@ public final class MainPanel extends JPanel implements ActionListener {
         this.controll.viewFileInfoAction.setTable(this.heart_sound_files_table);
     }
 
-    @Override
     public void actionPerformed(final ActionEvent event) {
         if (event.getSource().equals(this.extract_features_button)) {
             this.controll.addRecordingsAction.addFile();
@@ -68,13 +70,12 @@ public final class MainPanel extends JPanel implements ActionListener {
                 final ArrayList obs = genoa.generateObsFromFiles(this.controll);
                 ExtrFeatrsTrain.trainOnFeatures(obs);
                 SwingUtilities.invokeLater(new Runnable() {
-                    @Override
                     public void run() {
-                        final HMMmanager manager = new HMMmanager();
-                        manager.setDefaultCloseOperation(3);
-                        manager.setSize(new Dimension(400, 400));
-                        manager.setVisible(true);
-                        manager.showHMM();
+                        controll.hmmManager = new HMMmanager();
+                        controll.hmmManager.setDefaultCloseOperation(3);
+                        controll.hmmManager.setSize(new Dimension(400, 400));
+                        controll.hmmManager.setVisible(true);
+                        controll.hmmManager.showHMM();
                     }
                 });
             }
@@ -84,7 +85,6 @@ public final class MainPanel extends JPanel implements ActionListener {
             if (this.controll.exfeat != null) {
                 final Classify classify = new Classify(this.controll, this.outer_frame, this.controll.exfeat.recordingInfo);
                 SwingUtilities.invokeLater(new Runnable() {
-                    @Override
                     public void run() {
                         final Similarity simi = new Similarity();
                         float score;
@@ -94,12 +94,10 @@ public final class MainPanel extends JPanel implements ActionListener {
                         score = Float.parseFloat(similScore);
                         if (score < 0.5) {
                             simi.textArea.setText("The similarity score of the tested file is too low\n");
+                        } else if ((score > 0.5) && (score < 0.75)) {
+                            simi.textArea.setText("The tested file has some similarity to the training set\n");
                         } else {
-                            if ((score > 0.5) && (score < 0.75)) {
-                                simi.textArea.setText("The tested file has some similarity to the training set\n");
-                            } else {
-                                simi.textArea.setText("The tested file has good similarity to the training set\n");
-                            }
+                            simi.textArea.setText("The tested file has good similarity to the training set\n");
                         }
                         simi.textArea.append("Value found: " + similScore);
                         simi.textArea.append("\n");
@@ -109,7 +107,7 @@ public final class MainPanel extends JPanel implements ActionListener {
                         final ArrayList due = EntryPoint.hmmTest.getObsrvSeq();
                         for (int idx = 0; idx < EntryPoint.hmmTest.worksWell.size(); ++idx) {
                             final String str = (String) EntryPoint.hmmTest.worksWell.get(idx);
-                            final Character trez = str.charAt(1);
+                            final Character trez = Character.valueOf(str.charAt(1));
                             final String yon = trez.toString();
                             if (Integer.parseInt(yon) < 5) {
                                 simi.textArea.append("\n");
@@ -125,12 +123,13 @@ public final class MainPanel extends JPanel implements ActionListener {
                     }
                 });
             }
+        } else if (event.getSource().equals(this.loadHMM_button)) {
+            HMMmanager.loadHMMProxy();
         }
     }
 
     public void addTableMouseListener() {
         this.heart_sound_files_table.addMouseListener(new MouseAdapter() {
-            @Override
             public void mouseClicked(final MouseEvent event) {
                 if (event.getClickCount() == 2) {
                     MainPanel.this.viewRecordingInformation();
