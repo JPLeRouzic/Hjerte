@@ -1,7 +1,6 @@
 
 package Misc.sampled;
 
-import java.io.PrintStream;
 import javax.sound.sampled.*;
 
 public class AudioEventLineListener
