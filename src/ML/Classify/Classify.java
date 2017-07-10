@@ -18,6 +18,9 @@ import javax.swing.JOptionPane;
 public class Classify {
     
     float similarity ;
+    public FindBeats cb ;
+    public Segmentation segmt  ;
+    public FromFileToAudio e = null;
 
     public Classify(Control controller, OuterFrame outer_frame, RecordingInfo info[]) {
         ArrayList beats = null;
@@ -32,7 +35,7 @@ public class Classify {
         }
 
         File load_file = new File(recordings[0].file_path);
-        FromFileToAudio e = null;
+        
         try {
             e = new FromFileToAudio(
                     load_file);
@@ -52,10 +55,10 @@ public class Classify {
 
         float[] data_norm = norm.normalizeAmplitude(samples);
 
-        FindBeats cb = new FindBeats();
+        cb = new FindBeats();
 
         // calculate beat rate
-        cb.calcBeat1(data_norm, smplingRate, heart_rate);
+        cb.calcBeat(data_norm, smplingRate, heart_rate);
 
         // calculate beat rate
         beats = cb.getProbableBeats();
@@ -73,7 +76,7 @@ public class Classify {
          * have an observation matrix as input to the training, The result of
          * training should fill in the state transition matrix.
          */
-        Segmentation segmt = new Segmentation(cb);
+        segmt = new Segmentation(cb);
 
         segmt.segmentation(cb, smplingRate);
 
